@@ -2,7 +2,7 @@
 ### DUMMY EXAMPLE 1 - GPA <-> SAT
 library(ggplot2)
 
-SAT_set <- read.csv("~/Downloads/Dummy_set.csv")
+SAT_set <- read.csv("https://raw.githubusercontent.com/ProfNascimento/GLM/main/LM/Dummy_set.csv")
 str(SAT_set)
 #tapply(SAT_set$GPA, SAT_set$Attendance,summary)
 psych::describeBy(SAT_set, group="Attendance")

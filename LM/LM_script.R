@@ -1,7 +1,7 @@
 
 ## https://www.kaggle.com/vedavyasv/usa-housing
 # Reading data
-housing <- read.csv("~/Desktop/GLM/LINEAR/USA_Housing.csv")[,-7]
+housing <- read.csv("https://raw.githubusercontent.com/ProfNascimento/GLM/main/LM/USA_Housing.csv")[,-7]
 str(housing)
 
 # Print top 6 observations

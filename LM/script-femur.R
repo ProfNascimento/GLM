@@ -1,6 +1,6 @@
 
 ## IMPORT SET
-femur <- read.csv("~/Downloads/MulticollinearityExample.csv")[,-c(5,6,7)]
+femur <- read.csv("https://raw.githubusercontent.com/ProfNascimento/GLM/main/LM/MulticollinearityExample.csv")[,-c(5,6,7)]
 str(femur)
 
 psych::pairs.panels(femur)
