@@ -5,7 +5,7 @@ library(broom)      # helps to tidy up model outputs
 
 ## https://www.kaggle.com/purbar/advertising-data?select=Advertising.csv
 # Load data (remove row numbers included as X1 variable)
-advertising <- read.csv("~/Downloads/Advertising.csv")[,-1]
+advertising <- read.csv("https://raw.githubusercontent.com/ProfNascimento/GLM/main/LM/Advertising.csv")[,-1]
 head(advertising)
 dim(advertising)
 
