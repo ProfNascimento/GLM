@@ -1,4 +1,4 @@
-
+## SCRIPT LM ##
 ## https://www.kaggle.com/vedavyasv/usa-housing
 # Reading data
 housing <- read.csv("https://raw.githubusercontent.com/ProfNascimento/GLM/main/LM/USA_Housing.csv")[,-7]
