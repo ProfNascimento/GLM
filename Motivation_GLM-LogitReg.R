@@ -28,7 +28,13 @@ BD %>%  mutate(prob = ifelse(diabetes == "pos", 1, 0)) %>%
 ggplot(aes(glucose, prob)) +
   geom_point(alpha = 0.2) +
   geom_smooth(method = "glm", method.args = list(family = "binomial")) +
-  labs(
-    title = "Logistic Regression Model", 
-    x = "Plasma Glucose Concentration",
-    y = "Probability of being diabete-pos")
+  labs(title = "Logistic Regression Model", 
+       x = "Plasma Glucose Concentration",
+       y = "Probability of being diabete-pos") + 
+  geom_vline(xintercept=143.7) +
+  geom_hline(yintercept=0.5,lty=2) +
+  geom_text(x=75, y=0.7, label="CLASS 2 = 'pos'") +
+  geom_text(x=75, y=0.3, label="CLASS 1 = 'neg'")
+
+p_logit=summary(model)$coef[1]+summary(model)$coef[2]*143.7
+exp(p_logit)/(1+exp(p_logit))
