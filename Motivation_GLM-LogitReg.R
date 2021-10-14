@@ -36,5 +36,6 @@ ggplot(aes(glucose, prob)) +
   geom_text(x=75, y=0.7, label="CLASS 2 = 'pos'") +
   geom_text(x=75, y=0.3, label="CLASS 1 = 'neg'")
 
-p_logit=summary(model)$coef[1]+summary(model)$coef[2]*143.7
+x=143.7
+p_logit=summary(model)$coef[1]+summary(model)$coef[2]*x
 exp(p_logit)/(1+exp(p_logit))
