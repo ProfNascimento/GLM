@@ -12,7 +12,7 @@ plot(qlogis(seq(0,1,0.01), location = 0, scale = 1, lower.tail = TRUE, log.p = F
 # build a model that predicts the group membership of a hurricane, 
 # either tropical or non-tropical, based on the latitude of formation.
 
-hurricanes <- read.csv("~/Downloads/hurricanes.csv")
+hurricanes <- read.csv("https://raw.githubusercontent.com/ProfNascimento/GLM/main/LOGISTIC/hurricanes.csv")
 str(hurricanes)
 
 library(ggplot2)
