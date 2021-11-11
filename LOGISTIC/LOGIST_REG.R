@@ -26,9 +26,15 @@ ggplot(hurricanes, aes(x = Year, fill = factor(Type))) +
 # RESPONSE - 3 CLASSES
 (hurricanes.table <- table(hurricanes$Type))
 
-# RESPONSE - 2 CLASSES
+# RESPONSE - 2 CLASSES (Y=0="TROPICAL" vs Y=1="BAROCLINIC")
 hurricanes$Type.new  <- ifelse(test = hurricanes$Type==0, yes = 0, no = 1)
 table(hurricanes$Type.new)
+
+ggplot(hurricanes, aes(x = Year, fill = factor(Type.new))) +
+  geom_bar(stat = "count") +
+  scale_fill_discrete(name = "Type of Hurricane",
+                      labels = c("tropical-only", "baroclinic"))
+
 
 options(viewer=NULL)
 library(leaflet)
@@ -51,7 +57,7 @@ m <- addLegend(m,
                opacity = 1)
 m
 
-## FIT MODEL -- log(TROPICAL/BARO) --
+## FIT MODEL --logit(BAROCLINIC/TROPICAL)--
 log.model <- glm(Type.new ~ FirstLat, data = hurricanes, family = binomial(logit) )
 summary(log.model)
 
@@ -85,9 +91,10 @@ exp(coefficients(log.model)[2])
 confint.default(log.model)[2,]
 exp(confint.default(log.model)[2,])
 
-predict(log.model, newdata = list(FirstLat = c(10, 23.5,30)), type = "response")
+predict(log.model, newdata = list(FirstLat = c(10, 23.5,30)), 
+        type = "response")
 
-## TRANSFORMING PROB INTO CLASSES
+## TRANSFORMING PROB INTO CLASSES (FIRST TRY)
 mod_pred=ifelse(log.model$fitted.values>0.5,1,0)
 
 require('caret')
@@ -96,14 +103,13 @@ y <- factor(hurricanes$Type.new)
 y_hat <- factor(mod_pred)
 
 #Creating confusion matrix
-example <- confusionMatrix(data=y_hat, reference = y)
-example
+confusionMatrix(data=y_hat, reference = y)
 
-###
+### SECOND TRY
 mod_pred=ifelse(log.model$fitted.values>0.25,1,0)
 
-
+#ROC Curve
 library(ROCit)
-
-ROCit_obj <- rocit(score=log.model$fitted.values, class=expected_value)
+ROCit_obj <- rocit(score=log.model$fitted.values, class=y)
+summary(ROCit_obj)
 plot(ROCit_obj)
