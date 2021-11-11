@@ -51,15 +51,35 @@ m <- addLegend(m,
                opacity = 1)
 m
 
-## FIT MODEL
-log.model <- glm(Type.new ~ FirstLat, data = hurricanes, family = 'binomial')
+## FIT MODEL -- log(TROPICAL/BARO) --
+log.model <- glm(Type.new ~ FirstLat, data = hurricanes, family = binomial(logit) )
 summary(log.model)
 
+log.model2 <- glm(Type.new ~ FirstLat, data = hurricanes, family = binomial(link = probit))
+summary(log.model2)
+
+log.model3 <- glm(Type.new ~ FirstLat, data = hurricanes, family = binomial(link = cloglog))
+summary(log.model3)
+
+colors <- c("LOGIT" = "blue", "PROBIT" = "red", "cLOG-LOG" = "green")
+ggplot(hurricanes, aes(FirstLat,Type.new)) + 
+  geom_point(size = 2) + 
+  geom_smooth(method = "glm", se = F, aes(color="LOGIT"), 
+              method.args = list(family =binomial(link=logit)))+ 
+  geom_smooth(method = "glm", se = F, aes(color="PROBIT"), lty=4,
+              method.args = list(family =binomial(link=probit)))+ 
+  geom_smooth(method = "glm", se = F, aes(color="cLOG-LOG"), 
+              method.args = list(family =binomial(link=cloglog)))+ 
+  labs(x = "LATITUDE (X1)",
+       y = expression(paste("Probability (",pi,")")),
+       color = "Legend") + scale_color_manual(values = colors)
+
+
+## INTERPRETATION COEF FROM THE LOGIT REG
 list( log.model$coefficient, 
       round( 1 - ( log.model$deviance / log.model$null.deviance ), 2 ) )
 
 summary(log.model)$coefficients
-
 exp(coefficients(log.model)[2])
 
 confint.default(log.model)[2,]
@@ -67,50 +87,23 @@ exp(confint.default(log.model)[2,])
 
 predict(log.model, newdata = list(FirstLat = c(10, 23.5,30)), type = "response")
 
-##
-lats = seq(min(hurricanes$FirstLat), max(hurricanes$FirstLat), 0.1)
-
-probs = predict(log.model, 
-                newdata = data.frame(FirstLat = lats), 
-                type = "response", 
-                se.fit = TRUE)
-
-pm = probs$fit
-pu = probs$fit + probs$se.fit * 1.96 # 95% confidence interval
-pl = probs$fit - probs$se.fit * 1.96 # 95% confidence interval
-
-plot(hurricanes$FirstLat, 
-     hurricanes$Type.new, 
-     pch = 16, 
-     cex = 1, 
-     ylab = "Probability", 
-     xlab = "Formation Latitude (N)")
-
-grid()
-
-polygon(c(rev(lats),lats), c(rev(pl),pu),
-        col = "grey90", border = NA)
-
-lines(lats, pm, lwd = 2)
-lines(lats, pu, lwd = 2, col = "red")
-lines(lats, pl, lwd = 2, col = "red")
-
-abline(h=0.1, lty=2)
-abline(h=0.5, lty=2)
-abline(h=0.9, lty=2)
-
-
+## TRANSFORMING PROB INTO CLASSES
 mod_pred=ifelse(log.model$fitted.values>0.5,1,0)
 
 require('caret')
 #Creates vectors having data points
-expected_value <- factor(hurricanes$Type.new)
-predicted_value <- factor(mod_pred)
+y <- factor(hurricanes$Type.new)
+y_hat <- factor(mod_pred)
 
 #Creating confusion matrix
-example <- confusionMatrix(data=predicted_value, reference = expected_value)
-
+example <- confusionMatrix(data=y_hat, reference = y)
 example
 
 ###
 mod_pred=ifelse(log.model$fitted.values>0.25,1,0)
+
+
+library(ROCit)
+
+ROCit_obj <- rocit(score=log.model$fitted.values, class=expected_value)
+plot(ROCit_obj)
