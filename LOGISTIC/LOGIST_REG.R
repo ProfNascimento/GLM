@@ -106,10 +106,16 @@ y_hat <- factor(mod_pred)
 confusionMatrix(data=y_hat, reference = y)
 
 ### SECOND TRY
-mod_pred=ifelse(log.model$fitted.values>0.25,1,0)
+require(pROC)
+roc.based=roc(hurricanes$Type.new, log.model$fitted.values)
+best=coords(roc.based, "best", ret=c("threshold", "specificity", "sensitivity"), best.method="closest.topleft", transpose=TRUE)
+plot(roc.based, col="blue", ylab="SEN", xlab="1-SPE", print.thres="best", print.thres.best.method="closest.topleft", legacy.axes=TRUE, ylim=c(0,1), print.auc=TRUE)
+
+y_hat2=ifelse(log.model$fitted.values>best[1],1,0)
+confusionMatrix(data=as.factor(y_hat2), reference = y)
 
 #ROC Curve
 library(ROCit)
-ROCit_obj <- rocit(score=log.model$fitted.values, class=y)
+ROCit_obj <- rocit(score=log.model$fitted.values, class=y,method = "bin")
 summary(ROCit_obj)
 plot(ROCit_obj)
