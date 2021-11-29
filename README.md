@@ -7,9 +7,9 @@ Multiple Regression\
 Polynomial Regression
 
 UNIT II - GENERALIZED LINEAR MODELS\
-Asymmetric Positive Response Data\
 Dummy Response Data\
 Countable Response Data\
+Asymmetric Positive Response Data\
 Quasi-Likelihood Response Data
 
 UNIT III - INTRO MIXED EFFECT MODEL
