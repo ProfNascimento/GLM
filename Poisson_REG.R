@@ -132,12 +132,32 @@ with(data, tapply(breaks, tension, function(x) {
 mean(data$breaks) # calculate mean
 var(data$breaks) # calculate variance
 
+
 # model poisson regression using glm()
 poisson.model <- glm(breaks ~ wool*tension, data, family = poisson(link = "log"))
 summary(poisson.model)
 
 pchisq(poisson.model$deviance,
        poisson.model$df.residual,lower.tail = FALSE)
+
+
+## CLUSTERING VISUALIZATION
+mn <- with(data, tapply(breaks, tension, mean) ) # Group means
+vr <- with(data, tapply(breaks, tension, var) )
+# Group variances
+plot( log(vr) ~ log(mn), las=1,
+      xlab="Group mean", ylab="Group variance")
+
+data.frame(mn, vr,ratio=vr/mn)
+
+# Suggests that the V(mu)=mu^2.7
+coef(lm(log(vr)~log(mn)))
+
+#The mean–variance relationship here is
+#in some sense intermediate between
+#that for the Poisson (V (μ) = μ) and 
+#gamma (V (μ) = μ2 ) distributions.
+
 
 BN.model <- MASS::glm.nb(breaks ~ wool*tension, data = data)
 summary(BN.model)
@@ -146,8 +166,8 @@ pchisq(BN.model$deviance,
        BN.model$df.residual,lower.tail = FALSE)
 
 require(jtools)
+plot_summs(poisson.model,BN.model, model.names =c("POISSON","NEG BIN.") , scale = TRUE, exp = TRUE)
 cat_plot(BN.model, pred = tension, modx = wool)
-plot_summs(BN.model, scale = TRUE, exp = TRUE,ci_level = 0.95)
 
 plot(BN.model)
 
